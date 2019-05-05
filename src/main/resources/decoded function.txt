@@ -1,0 +1,56 @@
+6027: jt r[0] 6035
+6030: add r[0] r[1] 1
+6034: ret
+6035: jt r[1] 6048
+6038: add r[0] r[0] 32767
+6042: set r[1] r[7]
+6045: call 6027
+6047: ret
+6048: push r[0]
+6050: add r[1] r[1] 32767
+6054: call 6027
+6056: set r[1] r[0]
+6059: pop r[0]
+6061: add r[0] r[0] 32767
+6065: call 6027
+6067: ret
+
+ack(x, y):
+if (x==0) {
+  return y+1
+}
+if (x!=0 && y==0){
+  return ack(x-1, sol)
+}
+stack.push(x)
+y = call ack(x, y-1)
+x = stack.pop()
+return ack(x-1, y)
+
+result is put in r[0]
+
+ack(x, y, z):
+if (x==0) {
+  return y+1
+}
+if (x!=0 && y==0){
+  return ack(x-1, z, z)
+}
+y = ack(x, y-1, z)
+return ack(x-1, y, z)
+
+ack(0, y, z) = y+1
+ack(1, 0, z) = ack(0, z, z) = z+1
+ack(1, 1, z) = ack(0, ack(1, 0, z), z) = ack(1, 0, z)+1 = (z+1)+1 = z+(1)+1
+ack(1, 2, z) = ack(0, ack(1, 1, z), z) = ack(1, 1, z)+1 = ((z+1)+1)+1 = z+(2)+1
+ack(1, y, z) = ack(0, ack(1, y-1, z), z) = ack(1, y-1, z)+1 = z+y+1
+ack(2, 0, z) = ack(1, z, z) = z+z+1 = 2z+1
+ack(2, 1, z) = ack(1, ack(2, 0, z), z) = ack(2, 0, z)+z+1 = (2z+1)+z+1
+ack(2, 2, z) = ack(1, ack(2, 1, z), z) = ack(2, 1, z)+z+1 = ((2z+1)+z+1)+z+1 = (2z+1)+2(z+1)
+ack(2, y, z) = ack(1, ack(2, y-1, z), z) = ack(2, y-1, z)+z+1 = (2z+1)+y(z+1)
+ack(3, 0, z) = ack(2, z, z) = (2z+1)+z(z+1) = zz+3z+1
+ack(3, 1, z) = ack(2, ack(3, 0, z), z) = ack(3, 0, z)(z+1)+2z+1 = (zz+3z+1)(z+1)+2z+1
+ack(3, 2, z) = ack(2, ack(3, 1, z), z) = ack(3, 1, z)(z+1)+2z+1 = ((zz+3z+1)(z+1)+2z+1)(z+1)+2z+1
+ack(3, y, z) = ack(2, ack(3, y-1, z), z) = ack(3, y-1, z)(z+1)+2z+1 = y times:res(z+1)+2z+1 where first res=zz+3z+1 = opt(y)
+ack(4, 0, z) = ack(3, z, z)
+ack(4, 1, z) = ack(3, ack(4, 0, z), z) = ack(3, ack(3, z, z), z) = opt(opt(z))
