@@ -19,7 +19,7 @@ ack(x, y):
 if (x==0) {
   return y+1
 }
-if (x!=0 && y==0){
+if (y==0){
   return ack(x-1, sol)
 }
 stack.push(x)
@@ -27,13 +27,13 @@ y = call ack(x, y-1)
 x = stack.pop()
 return ack(x-1, y)
 
-result is put in r[0]
+result is always put in r[0]
 
 ack(x, y, z):
 if (x==0) {
   return y+1
 }
-if (x!=0 && y==0){
+if (y==0){
   return ack(x-1, z, z)
 }
 y = ack(x, y-1, z)
