@@ -11,9 +11,15 @@ public class VM {
     private static Deque<Integer> stack = new LinkedList<>();
     private static int[] registers = new int[8];
     private static int address = 0;
-    private static final String FILENAME = "challenge.bin";
     private static final int NEWLINE = 10;
+    private static final String FILENAME = "challenge.bin";
     private static final String PATH = "src/main/resources/";
+    static final String[] MAZE = (". . . . . .\n" +
+            ". * 8 - 1 .\n" +
+            ". 4 * 11 * .\n" +
+            ". + 4 - 18 .\n" +
+            ". 22 - 9 * .\n" +
+            ". . . . . .").split("\\s");
 
     public static void main(String[] args) throws IOException {
         execute(loadProgram(PATH + FILENAME));
@@ -387,7 +393,7 @@ public class VM {
                     if (address == 5490) {
                         //optimize teleporter computation
                         registers[0] = 6;
-                        registers[7] = Teleporter.teleport();
+                        registers[7] = new Teleporter(6).teleport();
                     } else {
                         //write the address of the next instruction to the stack and jump to <a>
                         a = toValue(nextNumber(memory));
@@ -433,7 +439,7 @@ public class VM {
                             loadAddressAndRegisters(fileName + ".addr");
                             execute(loadProgram(fileName));
                         } else if (str.equals("solve orb")) {
-                            directions = Orb.solveOrb();
+                            directions = new Orb().solveOrb(MAZE);
                             str = directions.remove();
                         }
                     }

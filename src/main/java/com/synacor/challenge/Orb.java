@@ -1,9 +1,10 @@
 package com.synacor.challenge;
 
+import com.google.common.base.Preconditions;
+
 import java.util.*;
 import java.util.function.IntBinaryOperator;
 
-import static com.synacor.challenge.Orb.Operation.getOperatorBySimbol;
 
 class Orb {
     // don't try too hard :)
@@ -12,11 +13,23 @@ class Orb {
     private static final int GOAL = 30;
     private static final String END = "1";
 
-    private Orb() {
+    static final String NORTH = "north";
+    static final String EAST = "east";
+    static final String WEST = "west";
+    static final String SOUTH = "south";
+
+    private static final Map<String, IntBinaryOperator> SYMBOL_TO_OPERATOR = new HashMap<>();
+
+    static {
+        SYMBOL_TO_OPERATOR.put("+", (a, b) -> a + b);
+        SYMBOL_TO_OPERATOR.put("-", (a, b) -> a - b);
+        SYMBOL_TO_OPERATOR.put("*", (a, b) -> a * b);
     }
 
-    static Queue<String> solveOrb() {
-        final Cell[][] maze = buildMaze();
+    Queue<String> solveOrb(final String[] input) {
+        final Cell[][] maze = buildMaze(input);
+        Preconditions.checkArgument(maze.length == 6);
+        Preconditions.checkArgument(maze[0].length == 6);
         final List<Cell> currPath = new ArrayList<>();
         //START
         currPath.add(maze[4][1]);
@@ -33,26 +46,20 @@ class Orb {
             final Cell prev = res.get(i - 1);
             final String direction;
             if (curr.j == prev.j && curr.i - 1 == prev.i) {
-                direction = "south";
+                direction = SOUTH;
             } else if (curr.i == prev.i && curr.j + 1 == prev.j) {
-                direction = "west";
+                direction = WEST;
             } else if (curr.i == prev.i && curr.j - 1 == prev.j) {
-                direction = "east";
+                direction = EAST;
             } else {
-                direction = "north";
+                direction = NORTH;
             }
             directions.add(direction);
         }
         return directions;
     }
 
-    private static Cell[][] buildMaze() {
-        final String[] input = (". . . . . .\n" +
-                ". * 8 - 1 .\n" +
-                ". 4 * 11 * .\n" +
-                ". + 4 - 18 .\n" +
-                ". 22 - 9 * .\n" +
-                ". . . . . .").split("\\s");
+    private static Cell[][] buildMaze(final String[] input) {
         final Cell[][] maze = new Cell[6][6];
         int index = 0;
         for (int i = 0; i < maze.length; i++) {
@@ -91,9 +98,8 @@ class Orb {
     }
 
     private static int compute(final int currNumber, final String symbol, final String number) {
-        final IntBinaryOperator operator = getOperatorBySimbol(symbol);
-        if (operator != null) {
-            return operator.applyAsInt(currNumber, Integer.parseInt(number));
+        if (SYMBOL_TO_OPERATOR.containsKey(symbol)) {
+            return SYMBOL_TO_OPERATOR.get(symbol).applyAsInt(currNumber, Integer.parseInt(number));
         }
         return currNumber;
     }
@@ -115,28 +121,6 @@ class Orb {
             res.add(maze[i][j + 1]);
         }
         return res;
-    }
-
-    enum Operation {
-        PLUS("+", (a, b) -> a + b), MINUS("-", (a, b) -> a - b), MULT("*", (a, b) -> a * b);
-        private final String symbol;
-        private final IntBinaryOperator operator;
-        private static final Map<String, IntBinaryOperator> SYMBOL_TO_OPERATOR = new HashMap<>();
-
-        static {
-            for (final Operation s : Operation.values()) {
-                SYMBOL_TO_OPERATOR.put(s.symbol, s.operator);
-            }
-        }
-
-        Operation(final String symbol, final IntBinaryOperator operator) {
-            this.symbol = symbol;
-            this.operator = operator;
-        }
-
-        static IntBinaryOperator getOperatorBySimbol(final String symbol) {
-            return SYMBOL_TO_OPERATOR.get(symbol);
-        }
     }
 
     private static class Cell {

@@ -4,25 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Teleporter {
-    private Teleporter() {
+    private final int goal;
+    private int solution;
+    //used for memoization
+    private final Map<Integer, Integer> cache;
+
+    Teleporter(final int goal) {
+        solution = 0;
+        cache = new HashMap<>();
+        this.goal = goal;
     }
 
-    private static int solution = 0;
-    //used for memoization
-    private static final Map<Integer, Integer> cache = new HashMap<>();
-
-    static int teleport() {
+    int teleport() {
         while (solution < VM.MODULO) {
             cache.clear();
-            if (optimizedAckermann41(optimizedAckermann41(solution)) == 6) {
+            if (optimizedAckermann41(optimizedAckermann41(solution)) == goal) {
                 return solution;
             }
             solution++;
         }
-        return 0;
+        return -1;
     }
 
-    private static int optimizedAckermann41(final int y) {
+    private int optimizedAckermann41(final int y) {
         if (cache.containsKey(y)) {
             return cache.get(y);
         }
